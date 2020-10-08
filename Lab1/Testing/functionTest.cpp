@@ -35,25 +35,37 @@ int main()
         parseCommand(cmdLine, &command);
         command.argv[command.argc] = NULL;
 
-        printf("%c", command.argv[0]);
-        /*switch(command.argv[0])
+        switch(*command.name)
         {
         case 'C':
             printf("%s", "Copy");
             break;
-        case 'D':
+//        case 'D':
         case 'E':
-        case 'H':
-        case 'L':
-        case 'M':
-        case 'P':
-        case 'Q':
-        case 'S':
-        case 'W':
-        case 'X':
-        default:
+            {
+                printPrompt();
+                int i = 1;
+                while(command.argv[i] != NULL)
+                {
+                    printf("%s ", command.argv[i]);
+                    i++;
+                }
+                printf("%c", '\n');
+            }
             break;
-        }*/
+//        case 'H':
+//        case 'L':
+//        case 'M':
+//        case 'P':
+        case 'Q':
+            printf("\n\n shell: Terminating successfully\n");
+            return(0);
+//        case 'S':
+//        case 'W':
+//        case 'X':
+//        default:
+//            break;
+        }
 
     }
 }
