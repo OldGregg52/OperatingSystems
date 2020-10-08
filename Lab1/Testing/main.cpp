@@ -65,6 +65,7 @@ int parseCommand(char* cLine, struct command_t* cmd)
 
 void printPrompt()
 {
-    promptString = ...;
+    char promptString[FILENAME_MAX];
+    getcwd(promptString, FILENAME_MAX);
     printf("%s", promptString);
 }
