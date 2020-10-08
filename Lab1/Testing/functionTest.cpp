@@ -35,6 +35,25 @@ int main()
         parseCommand(cmdLine, &command);
         command.argv[command.argc] = NULL;
 
+        switch(command.argv[0])
+        {
+        case 'C':
+            printf("%s", "Copy");
+            break;
+        case 'D':
+        case 'E':
+        case 'H':
+        case 'L':
+        case 'M':
+        case 'P':
+        case 'Q':
+        case 'S':
+        case 'W':
+        case 'X':
+        default:
+            break;
+        }
+
     }
 }
 
