@@ -1,3 +1,0 @@
-/home/class/gjb52/gjb52/OperatingSystems/Lab1/Testing/build/CMakeFiles/rebuild_cache.dir
-/home/class/gjb52/gjb52/OperatingSystems/Lab1/Testing/build/CMakeFiles/test.dir
-/home/class/gjb52/gjb52/OperatingSystems/Lab1/Testing/build/CMakeFiles/edit_cache.dir

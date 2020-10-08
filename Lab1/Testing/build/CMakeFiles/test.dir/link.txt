@@ -1,1 +1,0 @@
-/usr/bin/c++  -std=c++14  -rdynamic CMakeFiles/test.dir/main.cpp.o  -o test 
