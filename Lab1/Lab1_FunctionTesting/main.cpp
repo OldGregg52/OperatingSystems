@@ -19,6 +19,7 @@ struct command_t
 
 int parseCommand(char *, struct command_t *);
 void readCommand(char *buffer);
+void printPrompt();
 
 int main()
 {
@@ -29,7 +30,11 @@ int main()
 
     while(true)
     {
+        printPrompt();
         readCommand(cmdLine);
+        parseCommand(cmdLine, &command);
+        command.argv[command.argc] = NULL;
+
     }
 }
 
@@ -56,4 +61,10 @@ int parseCommand(char* cLine, struct command_t* cmd)
     cmd->name = (char*) malloc(sizeof(cmd->argv[0]));
     strcpy(cmd->name, cmd->argv[0]);
     return 1;
+}
+
+void printPrompt()
+{
+    promptString = ...;
+    printf("%s", promptString);
 }
