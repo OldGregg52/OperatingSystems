@@ -65,7 +65,6 @@ int parseCommand(char* cLine, struct command_t* cmd)
 
 void printPrompt()
 {
-    char promptString[FILENAME_MAX];
-    getcwd(promptString, FILENAME_MAX);
-    printf("%s%c", promptString, '>');
+    char promptString[14] = "linux gjb52 |>";
+    printf("%s", promptString);
 }
