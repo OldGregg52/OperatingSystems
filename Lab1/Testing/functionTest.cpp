@@ -35,7 +35,8 @@ int main()
         parseCommand(cmdLine, &command);
         command.argv[command.argc] = NULL;
 
-        switch(command.argv[0])
+        printf("%c", command.argv[0]);
+        /*switch(command.argv[0])
         {
         case 'C':
             printf("%s", "Copy");
@@ -52,7 +53,7 @@ int main()
         case 'X':
         default:
             break;
-        }
+        }*/
 
     }
 }
