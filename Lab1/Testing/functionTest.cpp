@@ -65,6 +65,6 @@ int parseCommand(char* cLine, struct command_t* cmd)
 
 void printPrompt()
 {
-    char promptString[14] = "linux gjb52 |>";
+    char promptString[] = "linux gjb52 |>";
     printf("%s", promptString);
 }
