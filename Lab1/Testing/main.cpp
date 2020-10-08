@@ -67,5 +67,6 @@ void printPrompt()
 {
     char promptString[FILENAME_MAX];
     getcwd(promptString, FILENAME_MAX);
-    printf("%s", promptString);
+    printf("%s%c", promptString, '>');
+    printf()
 }
