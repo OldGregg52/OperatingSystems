@@ -126,7 +126,7 @@ int callFork(struct command_t* cmd, int * pid, int &status, int &foxPid, int &ch
         perror(cmd->name); return -1;
         foxPid = *pid;
     }
-    else
+    if((*pid = fork()) != 0)
     {
         wait(&status);
         if(foxPid > 0)
