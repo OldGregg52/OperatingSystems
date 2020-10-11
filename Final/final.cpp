@@ -106,7 +106,7 @@ int callFork(struct command_t* cmd, int * pid, int &status, char * args)
 {
     if((*pid = fork()) == 0)
     {
-        execvp(cmd->name, args);
+        execvp(cmd->name, args[3]);
         perror(cmd->name); return -1;
     }
 
@@ -176,12 +176,12 @@ void setStructValues(struct command_t* cmd, char* args)
     {
     case 'C':
         strcpy(cmd->name, "cp");
-        strcpy(args[0], cmd->argv[1]);
-        strcpy(args[1], cmd->argv[0]);
+        strcpy(*args[0], cmd->argv[1]);
+        strcpy(*args[1], cmd->argv[0]);
         break;
     case 'D':
         strcpy(cmd->name, "rm");
-        strcpy(args[0], cmd->argv[1]);
+        strcpy(*args[0], cmd->argv[1]);
         *args[1] = '\0';
         break;
     case 'L':
