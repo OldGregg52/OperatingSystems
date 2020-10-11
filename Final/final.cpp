@@ -183,31 +183,31 @@ void setStructValues(struct command_t* cmd)
     case 'D':
         strcpy(cmd->name, "rm");
         strcpy(cmd->args[0], cmd->argv[1]);
-        args[1] = '\0';
+        *cmd->args[1] = '\0';
         break;
     case 'L':
         strcpy(cmd->name, "pwd");
-        cmd->args[0] = cmd->args[1] = '\0';
+        *cmd->args[0] = *cmd->args[1] = '\0';
     case 'M':
         strcpy(cmd->name, "nano");
-        cmd->args[0] = cmd->args[1] = '\0';
+        *cmd->args[0] = *cmd->args[1] = '\0';
         break;
     case 'P':
         strcpy(cmd->name, "more");
-        cmd->args[0] = *cmd->argv[1];
-        cmd->args[1] = '\0';
+        cmd->args[0] = cmd->argv[1];
+        *cmd->args[1] = '\0';
         break;
     case 'S':
         strcpy(cmd->name, "firefox");
-        cmd->args[0] = cmd->args[1] = '\0';
+        *cmd->args[0] = *cmd->args[1] = '\0';
         break;
     case 'W':
         strcpy(cmd->name, "clear");
-        cmd->args[0] = cmd->args[1] = '\0';
+        *cmd->args[0] = *cmd->args[1] = '\0';
         break;
     case 'X':
         strcpy(cmd->name, cmd->argv[1]);
-        cmd->args[0] = cmd->args[1] = '\0';
+        *cmd->args[0] = *cmd->args[1] = '\0';
         break;
     }
 
