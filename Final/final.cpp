@@ -280,7 +280,7 @@ void errorMessage(struct command_t* cmd)
         break;
     default:
         cout << "There are no commands that are similar, please refer to the Guide" << endl
-             << "\t\tfor a list of commands and syntax." << endl;
+             << "\t\tfor a list of commands and syntax." << endl
              << "\t\t[Type 'H' and press 'ENTER']";
         break;
     }
