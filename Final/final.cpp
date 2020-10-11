@@ -22,14 +22,13 @@ struct command_t
 int parseCommand(char*, struct command_t*);
 void readCommand(char*);
 void printPrompt();
-int callFork(struct command_t*, int*);
-int callFork(struct command_t*, int*, int*);
+int callFork(struct command_t*, int*, int&);
+int callFork(struct command_t*, int*, int&, int&);
 void helpPrint();
 
 int main()
 {
-    int pid, temp, status;
-    int* foxPid;
+    int pid, status, foxPid;
     char cmdLine[MAX_LINE_LEN];
     struct command_t command;
 
@@ -45,12 +44,12 @@ int main()
         {
         case 'C':
             strcpy(command.name, "cp");
-            callFork(&command, &pid);
+            callFork(&command, &pid, status);
             wait(&status);
             break;
         case 'D':
             strcpy(command.name, "rm");
-            callFork(&command, &pid);
+            callFork(&command, &pid, status);
             wait(&status);
             break;
         case 'E':
@@ -71,7 +70,7 @@ int main()
         case 'L':
             strcpy(command.name, "pwd");
             cout << endl;
-            callFork(&command, &pid);
+            callFork(&command, &pid, status);
             wait(&status);
             strcpy(command.name, "ls");
             cout << endl;
@@ -80,17 +79,17 @@ int main()
             command.argv[2] = NULL;
             strcpy(command.argv[0], command.name);
             strcpy(command.argv[1], "-l");
-            callFork(&command, &pid);
+            callFork(&command, &pid, status);
             wait(&status);
             break;
         case 'M':
             strcpy(command.name, "nano");
-            callFork(&command, &pid);
+            callFork(&command, &pid, status);
             wait(&status);
             break;
         case 'P':
             strcpy(command.name, "more");
-            callFork(&command, &pid);
+            callFork(&command, &pid, status);
             wait(&status);
             break;
         case 'Q':
@@ -102,16 +101,16 @@ int main()
             command.argv[1] = NULL;
             *command.argv[0] = '&';
             strcpy(command.argv[0], "firefox");
-            callFork(&command, &pid, &firefox);
+            callFork(&command, &pid, status, foxPid);
             break;
         case 'W':
             strcpy(command.name, "clear");
-            callFork(&command, &pid);
+            callFork(&command, &pid, status);
             wait(&status);
             break;
         case 'X':
             strcpy(command.name, command.argv[1]);
-            callFork(&command, &pid);
+            callFork(&command, &pid, status);
             wait(&status);
             break;
         }
@@ -144,10 +143,8 @@ int parseCommand(char* cLine, struct command_t* cmd)
     return 1;
 }
 
-int callFork(struct command_t* cmd, int * pid)
+int callFork(struct command_t* cmd, int * pid, int &status)
 {
-    int status;
-
     if((*pid = fork()) == 0)
     {
         execvp(cmd->name, cmd->argv);
@@ -157,26 +154,26 @@ int callFork(struct command_t* cmd, int * pid)
     return 0;
 }
 
-int callFork(struct command_t* cmd, int* pid, int* foxPid)
+int callFork(struct command_t* cmd, int* pid, int &status, int &foxPid)
 {
-    int status, chPid;
+    int chPid;
 
     if((*pid = fork()) == 0)
     {
         execvp(cmd->name, cmd->argv);
         perror(cmd->name); return -1;
-        *foxPid = *pid;
+        foxPid = *pid;
     }
     if((*pid = fork()) != 0)
     {
         wait(&status);
         if(foxPid > 0)
         {
-            chPid = waitpid(*foxPid, &status, WNOHANG);
-            if(chPid == *foxPid)
+            chPid = waitpid(foxPid, &status, WNOHANG);
+            if(chPid == foxPid)
             {
                 cout << "Detecting firefox termination.\n";
-                kill(foxPid, SIGTERM); *foxPid = 0;
+                kill(foxPid, SIGTERM); foxPid = 0;
             }
         }
     }
