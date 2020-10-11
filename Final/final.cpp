@@ -31,9 +31,9 @@ struct command_t
 int parseCommand(char*, struct command_t*);
 void readCommand(char*);
 void printPrompt();
-int callFork(struct command_t*, int*, int&, char*);
+int callFork(struct command_t*, int*, int&);
 void helpPrint();
-void setStructValues(struct command_t*, char*);
+void setStructValues(struct command_t*);
 
 int main()
 {
@@ -100,7 +100,7 @@ int parseCommand(char* cLine, struct command_t* cmd)
     cmd->argc = argc-1;
     cmd->name = (char*) malloc(sizeof(cmd->argv[0]));
     strcpy(cmd->name, cmd->argv[0]);
-    return 1;s
+    return 1;
 }
 
 int callFork(struct command_t* cmd, int * pid, int &status)
