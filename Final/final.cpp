@@ -87,9 +87,6 @@ int main()
             {
                 setStructValues(&command);
                 callFork(&command, &pid, status, foxPid, chPid);
-
-                if(*command.name != 'f')
-                    wait(&status);
             }
         }
 
