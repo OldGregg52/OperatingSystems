@@ -194,14 +194,13 @@ void setStructValues(struct command_t* cmd)
     {
     case 'C':
         strcpy(cmd->name, "cp");
-        cout << *cmd->argv[1] << ' ' << *cmd->argv[2];
         strcpy(cmd->args[1], cmd->argv[1]);
         strcpy(cmd->args[2], cmd->argv[2]);
         break;
     case 'D':
         strcpy(cmd->name, "rm");
-        cout << *cmd->argv[0] << ' ' << *cmd->argv[1];
-        cmd->args[1] = cmd->argv[1];
+        strcpy(cmd->args[1], cmd->argv[1]);
+        *cmd->args[2] = ' ';
         break;
     case 'L':
         strcpy(cmd->name, "pwd");
