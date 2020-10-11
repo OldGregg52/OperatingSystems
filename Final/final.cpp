@@ -212,7 +212,7 @@ bool setStructValues(struct command_t* cmd)
     case 'L':
         strcpy(cmd->name, "pwd");
         cmd->args[1] = cmd->args[2] = cmd->args[3];
-        cout << endl;
+        std::cout << std::endl;
         break;
     case 'M':
         strcpy(cmd->name, "nano");
