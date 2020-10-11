@@ -77,6 +77,7 @@ int main()
             setStructValues(&command);
             callFork(&command, &pid, status, foxPid, chPid);
             wait(&status);
+            cout << endl;
             break;
         case 'Q':
             cout << "\n\nshell: Terminating successfully\n";
@@ -250,7 +251,6 @@ void setStructValues(struct command_t* cmd)
         strcpy(cmd->args[1], "-l");
         cmd->args[2] = NULL;
         break;
-    default:
     }
 
     return;
