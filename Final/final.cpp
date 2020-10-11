@@ -227,7 +227,7 @@ void setStructValues(struct command_t* cmd)
         break;
     case 'M':
         strcpy(cmd->name, "nano");
-        cmd->args[0] = cmd->args[1] = cmd->args[2] = NULL;
+        cmd->args[1] = cmd->args[2] = NULL;
         break;
     case 'P':
         strcpy(cmd->name, "more");
