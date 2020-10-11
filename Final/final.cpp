@@ -238,15 +238,15 @@ bool setStructValues(struct command_t* cmd)
 
 void errorMessage(struct command_t* cmd)
 {
-    cout << "\n\n\t!--The entered command doesn't match any preexisitng commands--!\n\n";
-    cout << "Command Entered: " << *cmd->name << endl << endl;
+    cout << "\n\t!--The entered command doesn't match any preexisitng commands--!\n\n";
+    cout << "\tCommand Entered: " << *cmd->name << endl << endl << '\t';
 
     char temp = *cmd->name;
 
     switch(temp)
     {
     case 'c':
-        cout << endl << "Closest Possible Command: C, for 'COPY'";
+        cout << "Closest Possible Command: C, for 'COPY'";
         break;
     case 'd':
         cout << "Closest Possible Command: D, for 'DELETE'";
