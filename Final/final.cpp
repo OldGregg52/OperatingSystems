@@ -18,8 +18,6 @@
 #define MAX_LINE_LEN    80
 #define WHITESPACE      " ,\t\n"
 
-using namespace std;
-
 struct command_t
 {
     char *name;
@@ -58,29 +56,31 @@ int main()
                 int i = 1;
                 while(command.argv[i] != NULL)
                 {
-                    cout << command.argv[i] << " ";
+                    std::cout << command.argv[i] << " ";
                     i++;
                 }
-                cout << endl;
+                std::cout << std::endl;
             }
             break;
         case 'H':
             helpPrint();
             break;
         case 'L':
-            cout << endl;
+            std::cout << std::endl;
             setStructValues(&command);
             callFork(&command, &pid, status, foxPid, chPid);
             wait(&status);
-            cout << endl;
-            *command.name = 'A';
-            setStructValues(&command);
+            std::cout << std::endl;
+            strcpy(command.name, "ls");
+            strcpy(command.args[0], command.name);
+            strcpy(command.args[1], "-l");
+            command.args[2] = NULL;
             callFork(&command, &pid, status, foxPid, chPid);
             wait(&status);
-            cout << endl;
+            std::cout << std::endl;
             break;
         case 'Q':
-            cout << "\n\nshell: Terminating successfully\n";
+            std::cout << "\n\nshell: Terminating successfully\n";
             return(0);
             break;
         default:
@@ -98,8 +98,9 @@ int main()
             }
             break;
         }
-
     }
+
+    return(0);
 }
 
 void readCommand(char* buffer)
@@ -111,16 +112,16 @@ int parseCommand(char* cLine, struct command_t* cmd)
 {
     int argc;
     char** clPtr;
-    /* Initialization */
+
     clPtr = &cLine;
     argc = 0;
     cmd->argv[argc] = (char*) malloc(sizeof(cmd->argv[0]));
-    /* Fill argv[v] */
+
     while ((cmd->argv[argc] = strsep(clPtr, WHITESPACE)) != NULL)
     {
         cmd->argv[++argc] = (char*) malloc(MAX_ARG_LEN);
     }
-    /* Set the command name and argc */
+
     cmd->argc = argc-1;
     cmd->name = (char*) malloc(sizeof(cmd->argv[0]));
     strcpy(cmd->name, cmd->argv[0]);
@@ -144,7 +145,7 @@ int callFork(struct command_t* cmd, int* pid, int &status, int &foxPid, int &chP
             chPid = waitpid(foxPid, &status, WNOHANG);
             if(chPid == foxPid)
             {
-                cout << "Detecting firefox termination.\n";
+                std::cout << "Detecting firefox termination.\n";
                 kill(foxPid, SIGTERM); foxPid = 0;
             }
         }
@@ -154,27 +155,33 @@ int callFork(struct command_t* cmd, int* pid, int &status, int &foxPid, int &chP
 
 void printPrompt()
 {
-    cout << "linux gjb52 |> ";
+    std::cout << "linux gjb52 |> ";
 }
 
 void helpPrint()
 {
-     cout << endl << "To use this console, please enter the command you wish"
-          << "to execute with a singular capital letter (otherwise the command won't be read)"
-          << "followed by the necessary information, such as filenames*. A list of commands"
-          << "is available below:" << endl;
+     std::cout << std::endl << "To use this console, please enter the command you wish to execute with a singular" << std::endl
+          << "capital letter (otherwise the command won't be read) followed by" << std::endl
+          << "the necessary information, such as filenames*." << std::endl
+          << "A list of commands is available below:" << std::endl;
 
-     cout << "\tCopy:\t\t" << "C {origin path} {destination path}" << endl
-          << "\tDelete:\t\t" << "D {file path}" << endl
-          << "\tEcho:\t\t" << "E {text to be printed}" << endl
-          << "\tHelp:\t\t" << "H" << endl
-          << "\tList:\t\t" << "L" << endl
-          << "\tMake:\t\t" << "M {destination path}" << endl
-          << "\tPrint:\t\t" << "P {origin path}" << endl
-          << "\tQuit:\t\t" << "Q" << endl
-          << "\tFirefox:\t" << "S" << endl
-          << "\tWipe:\t\t" << "W" << endl
-          << "\tExecute:\t" << "X {program}" << endl;
+     std::cout << "\tCopy:\t\t" << "C {Origin File Path} {Destination File Path}" << std::endl
+          << "\tDelete:\t\t" << "D {File Path}" << std::endl
+          << "\tEcho:\t\t" << "E {Text to be Printed}" << std::endl
+          << "\tHelp:\t\t" << "H" << std::endl
+          << "\tList:\t\t" << "L" << std::endl
+          << "\tMake:\t\t" << "M {Destination Path}" << std::endl
+          << "\tPrint:\t\t" << "P {File Path}" << std::endl
+          << "\tQuit:\t\t" << "Q" << std::endl
+          << "\tFirefox:\t" << "S" << std::endl
+          << "\tWipe:\t\t" << "W" << std::endl
+          << "\tExecute:\t" << "X {Program}" << std::endl;
+
+     std::cout << "\nPlease also note that to ensure the commmands that require file paths work" << std::endl
+          << "\tthe path should be the absolute path to avoid the program from" << std::endl
+          << "\tselecting a file relative to its location accidentally" << std::endl << std::endl;
+
+     return;
 }
 
 bool setStructValues(struct command_t* cmd)
@@ -209,7 +216,8 @@ bool setStructValues(struct command_t* cmd)
         break;
     case 'M':
         strcpy(cmd->name, "nano");
-        cmd->args[1] = cmd->args[2] = NULL;
+        strcpy(cmd->args[1], cmd->argv[1]);
+        cmd->args[2] = NULL;
         break;
     case 'P':
         strcpy(cmd->name, "more");
@@ -243,52 +251,52 @@ bool setStructValues(struct command_t* cmd)
 
 void errorMessage(struct command_t* cmd)
 {
-    cout << "\n\t!--The entered command doesn't match any preexisitng commands--!\n\n";
-    cout << "\tCommand Entered: " << *cmd->name << endl << endl << '\t';
+    std::cout << "\n\t!--The entered command doesn't match any preexisitng commands--!\n\n";
+    std::cout << "\tCommand Entered: " << *cmd->name << std::endl << std::endl << '\t';
 
     char temp = *cmd->name;
 
     switch(temp)
     {
     case 'c':
-        cout << "Closest Possible Command: C, for 'COPY'";
+        std::cout << "Closest Possible Command: C, for 'COPY'";
         break;
     case 'd':
-        cout << "Closest Possible Command: D, for 'DELETE'";
+        std::cout << "Closest Possible Command: D, for 'DELETE'";
         break;
     case 'e':
-        cout << "Closest Possible Command: E, for 'ECHO'";
+        std::cout << "Closest Possible Command: E, for 'ECHO'";
         break;
     case 'm':
-        cout << "Closest Possible Command: M, for 'MAKE'";
+        std::cout << "Closest Possible Command: M, for 'MAKE'";
         break;
     case 'p':
-        cout << "Closest Possible Command: P, for 'CONTENTS'";
+        std::cout << "Closest Possible Command: P, for 'CONTENTS'";
         break;
     case 's':
-       cout << "Closest Possible Command: S, for 'FIREFOX'";
-       break;
+        std::cout << "Closest Possible Command: S, for 'FIREFOX'";
+        break;
     case 'x':
-       cout << "Closest Possible Command: X, for 'EXECUTE'";
-       break;
+        std::cout << "Closest Possible Command: X, for 'EXECUTE'";
+        break;
     case 'l':
-        cout << "Closest Possible Command: L, for 'LIST'";
+        std::cout << "Closest Possible Command: L, for 'LIST'";
         break;
     case 'w':
-        cout << "Closest Possible Command: W, for 'CLEAR'";
+        std::cout << "Closest Possible Command: W, for 'CLEAR'";
         break;
     case 'h':
-        cout << "Closest Possible Command: H, for 'HELP'";
+        std::cout << "Closest Possible Command: H, for 'HELP'";
         break;
     case 'q':
-        cout << "Closest Possible Command: Q, for 'QUIT'";
+        std::cout << "Closest Possible Command: Q, for 'QUIT'";
         break;
     default:
-        cout << "There are no commands that are similar, please refer to the Guide" << endl
-             << "\tfor a list of commands and syntax." << endl
+        std::cout << "There are no commands that are similar, please refer to the Guide" << std::endl
+             << "\tfor a list of commands and syntax." << std::endl
              << "\t[Type 'H' and press 'ENTER']";
         break;
     }
 
-    cout << endl << endl;
+    std::cout << std::endl << std::endl;
 }
