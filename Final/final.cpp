@@ -1,3 +1,11 @@
+/*
+ * Greg Brown
+ * Operating Systems
+ * Lab 1
+ * October 12, 2020
+ * Purpose: To produce a minimalist shell via the use of execvp() and fork() functions
+ */
+
 #include <iostream>
 #include <stdio.h>
 #include <string.h>
@@ -22,13 +30,14 @@ struct command_t
 int parseCommand(char*, struct command_t*);
 void readCommand(char*);
 void printPrompt();
-int callFork(struct command_t*, int*, int&);
-int callFork(struct command_t*, int*, int&, int&);
+int callFork(struct command_t*, int*, int&, char*);
 void helpPrint();
+void setStructValues(struct command_t*, char*);
 
 int main()
 {
     int pid, status, foxPid;
+    char *args[3];
     char cmdLine[MAX_LINE_LEN];
     struct command_t command;
 
@@ -42,16 +51,6 @@ int main()
 
         switch(*command.name)
         {
-        case 'C':
-            strcpy(command.name, "cp");
-            callFork(&command, &pid, status);
-            wait(&status);
-            break;
-        case 'D':
-            strcpy(command.name, "rm");
-            callFork(&command, &pid, status);
-            wait(&status);
-            break;
         case 'E':
             {
                 printPrompt();
@@ -67,52 +66,12 @@ int main()
         case 'H':
             helpPrint();
             break;
-        case 'L':
-            strcpy(command.name, "pwd");
-            cout << endl;
-            callFork(&command, &pid, status);
-            wait(&status);
-            strcpy(command.name, "ls");
-            cout << endl;
-            command.argv[1] = (char*) malloc(MAX_ARG_LEN);
-            command.argv[2] = (char*) malloc(MAX_ARG_LEN);
-            command.argv[2] = NULL;
-            strcpy(command.argv[0], command.name);
-            strcpy(command.argv[1], "-l");
-            callFork(&command, &pid, status);
-            wait(&status);
-            break;
-        case 'M':
-            strcpy(command.name, "nano");
-            callFork(&command, &pid, status);
-            wait(&status);
-            break;
-        case 'P':
-            strcpy(command.name, "more");
-            callFork(&command, &pid, status);
-            wait(&status);
-            break;
         case 'Q':
-            printf("\n\n shell: Terminating successfully\n");
+            cout << "\n\nshell: Terminating successfully\n";
             return(0);
-        case 'S':
-            strcpy(command.name, "firefox");
-            command.argv[1] = (char*) malloc(MAX_ARG_LEN);
-            command.argv[1] = NULL;
-            *command.argv[0] = '&';
-            strcpy(command.argv[0], "firefox");
-            callFork(&command, &pid, status, foxPid);
-            break;
-        case 'W':
-            strcpy(command.name, "clear");
-            callFork(&command, &pid, status);
-            wait(&status);
-            break;
-        case 'X':
-            strcpy(command.name, command.argv[1]);
-            callFork(&command, &pid, status);
-            wait(&status);
-            break;
+        default:
+            setStructValues(&command, argv);
+            callFork(&command, &pid, &status, args);
         }
 
     }
@@ -143,18 +102,18 @@ int parseCommand(char* cLine, struct command_t* cmd)
     return 1;
 }
 
-int callFork(struct command_t* cmd, int * pid, int &status)
+int callFork(struct command_t* cmd, int * pid, int &status, char * args)
 {
     if((*pid = fork()) == 0)
     {
-        execvp(cmd->name, cmd->argv);
+        execvp(cmd->name, args);
         perror(cmd->name); return -1;
     }
 
     return 0;
 }
 
-int callFork(struct command_t* cmd, int* pid, int &status, int &foxPid)
+/*int callFork(struct command_t* cmd, int* pid, int &status, int &foxPid)
 {
     int chPid;
 
@@ -179,7 +138,7 @@ int callFork(struct command_t* cmd, int* pid, int &status, int &foxPid)
     }
 
     return 0;
-}
+}*/
 
 void printPrompt()
 {
@@ -203,5 +162,52 @@ void helpPrint()
           << "\tQuit:\t\t" << "Q" << endl
           << "\tFirefox:\t" << "S" << endl
           << "\tWipe:\t\t" << "W" << endl
-          << "\tExecute:\t\t" << "X {program}" << endl;
+          << "\tExecute:\t" << "X {program}" << endl;
+}
+
+void setStructValues(struct command_t* cmd, char* args)
+{
+    args[0] = (char *) malloc(MAX_ARG_LEN);
+    args[1] = (char *) malloc(MAX_ARG_LEN);
+    args[2] = (char *) malloc(MAX_ARG_LEN);
+    args[2] = NULL;
+
+    switch(*cmd->name)
+    {
+    case 'C':
+        strcpy(cmd->name, "cp");
+        strcpy(args[0], cmd->argv[1]);
+        strcpy(args[1], cmd->argv[0]);
+        break;
+    case 'D':
+        strcpy(cmd->name, "rm");
+        strcpy(args[0], cmd->argv[1]);
+        *args[1] = '\0';
+        break;
+    case 'L':
+        strcpy(cmd->name, "pwd");
+        *args[0] = *args[1] = '\0';
+    case 'M':
+        strcpy(cmd->name, "nano");
+        *args[0] = *args[1] = '\0';
+        break;
+    case 'P':
+        strcpy(cmd->name, "more");
+        *args[0] = *args[1] = '\0';
+        break;
+    case 'S':
+        strcpy(cmd->name, "firefox");
+        *args[0] = *args[1] = '\0';
+        break;
+    case 'W':
+        strcpy(cmd->name, "clear");
+        *args[0] = *args[1] = '\0';
+        break;
+    case 'X':
+        strcpy(cmd->name, cmd->argv[1]);
+        *args[0] = *args[1] = '\0';
+        break;
+    }
+
+    return;
 }
