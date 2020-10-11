@@ -25,7 +25,7 @@ struct command_t
     char *name;
     int argc;
     char *argv[MAX_ARGS];
-    char *args[3];
+    char *args[4];
 };
 
 int parseCommand(char*, struct command_t*);
@@ -171,44 +171,42 @@ void setStructValues(struct command_t* cmd)
     cmd->args[0] = (char *) malloc(MAX_ARG_LEN);
     cmd->args[1] = (char *) malloc(MAX_ARG_LEN);
     cmd->args[2] = (char *) malloc(MAX_ARG_LEN);
-    cmd->args[2] = NULL;
+    cmd->args[3] = (char *) malloc(MAX_ARG_LEN);
+
+    cmd->args[0] = cmd->name;
+    *cmd->args[1] = *cmd->args[2] = '\0';
+    cmd->args[3] = NULL;
 
     switch(*cmd->name)
     {
     case 'C':
         strcpy(cmd->name, "cp");
-        strcpy(cmd->args[0], cmd->argv[1]);
-        strcpy(cmd->args[1], cmd->argv[0]);
+        strcpy(cmd->args[1], cmd->argv[1]);
+        strcpy(cmd->args[2], cmd->argv[2]);
         break;
     case 'D':
         strcpy(cmd->name, "rm");
-        strcpy(cmd->args[0], cmd->argv[1]);
-        *cmd->args[1] = '\0';
+        strcpy(cmd->args[1], cmd->argv[1]);
         break;
     case 'L':
         strcpy(cmd->name, "pwd");
-        *cmd->args[0] = *cmd->args[1] = '\0';
     case 'M':
         strcpy(cmd->name, "nano");
-        *cmd->args[0] = *cmd->args[1] = '\0';
         break;
     case 'P':
         strcpy(cmd->name, "more");
-        cmd->args[0] = cmd->argv[1];
-        *cmd->args[1] = '\0';
+        strcpy(cmd-args[1], cmd->argv[1]);
         break;
     case 'S':
         strcpy(cmd->name, "firefox");
         strcpy(cmd->args[0], cmd->name);
-        *cmd->args[1] = '\0';
+        *cmd->args[1] = '&';
         break;
     case 'W':
         strcpy(cmd->name, "clear");
-        *cmd->args[0] = *cmd->args[1] = '\0';
         break;
     case 'X':
         strcpy(cmd->name, cmd->argv[1]);
-        *cmd->args[0] = *cmd->args[1] = '\0';
         break;
     }
 
