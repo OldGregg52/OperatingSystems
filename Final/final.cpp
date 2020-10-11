@@ -236,11 +236,6 @@ bool setStructValues(struct command_t* cmd)
         strcpy(cmd->name, cmd->argv[1]);
         cmd->args[0] = cmd->args[1] = cmd->args[2] = NULL;
         break;
-    case 'A':
-        strcpy(cmd->name, "ls");
-        strcpy(cmd->args[1], "-l");
-        cmd->args[2] = NULL;
-        break;
     default:
         errorBool = true;
         break;
