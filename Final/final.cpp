@@ -33,12 +33,12 @@ void readCommand(char*);
 void printPrompt();
 int callFork(struct command_t*, int*, int&, int&, int&);
 void helpPrint();
-void setStructValues(struct command_t*);
+bool setStructValues(struct command_t*);
+void errorMessage(struct command_t*);
 
 int main()
 {
     int pid, status, foxPid, chPid;
-    //char *args[3];
     char cmdLine[MAX_LINE_LEN];
     struct command_t command;
 
@@ -82,12 +82,16 @@ int main()
         case 'Q':
             cout << "\n\nshell: Terminating successfully\n";
             return(0);
+            break;
         default:
             if(*command.name != '\0')
             {
-                setStructValues(&command);
-                callFork(&command, &pid, status, foxPid, chPid);
+                if(!setStructValues(&command));
+                    callFork(&command, &pid, status, foxPid, chPid);
+                else
+                    errorMessage(&command);
             }
+            break;
         }
 
     }
@@ -119,7 +123,7 @@ int parseCommand(char* cLine, struct command_t* cmd)
 }
 
 
-int callFork(struct command_t* cmd, int * pid, int &status, int &foxPid, int &chPid)
+int callFork(struct command_t* cmd, int* pid, int &status, int &foxPid, int &chPid)
 {
     if((*pid = fork()) == 0)
     {
@@ -142,33 +146,6 @@ int callFork(struct command_t* cmd, int * pid, int &status, int &foxPid, int &ch
     }
     return 0;
 }
-
-/*int callFork(struct command_t* cmd, int* pid, int &status, int &foxPid)
-{
-    int chPid;
-
-    if((*pid = fork()) == 0)
-    {
-        execvp(cmd->name, cmd->argv);
-        perror(cmd->name); return -1;
-        foxPid = *pid;
-    }
-    if((*pid = fork()) != 0)
-    {
-        wait(&status);
-        if(foxPid > 0)
-        {
-            chPid = waitpid(foxPid, &status, WNOHANG);
-            if(chPid == foxPid)
-            {
-                cout << "Detecting firefox termination.\n";
-                kill(foxPid, SIGTERM); foxPid = 0;
-            }
-        }
-    }
-
-    return 0;
-}*/
 
 void printPrompt()
 {
@@ -195,8 +172,10 @@ void helpPrint()
           << "\tExecute:\t" << "X {program}" << endl;
 }
 
-void setStructValues(struct command_t* cmd)
+bool setStructValues(struct command_t* cmd)
 {
+    bool errorBool = false;
+
     cmd->args[0] = (char *) malloc(MAX_ARG_LEN);
     cmd->args[1] = (char *) malloc(MAX_ARG_LEN);
     cmd->args[2] = (char *) malloc(MAX_ARG_LEN);
@@ -249,7 +228,59 @@ void setStructValues(struct command_t* cmd)
         strcpy(cmd->args[1], "-l");
         cmd->args[2] = NULL;
         break;
+    default:
+        errorBool = true;
+        break;
     }
 
-    return;
+    return errorBool;
+}
+
+void errorMessage(struct command_t* cmd)
+{
+    cout << "\n\n\t!--The entered command doesn't match any preexisitng commands--!\n\n";
+    cout << "Command Entered: " << *cmd->name;
+
+    char temp = *cmd->name + 32;
+
+    switch(temp)
+    {
+    case 'c':
+        cout << endl << "Closest Possible Command: C, for 'COPY'";
+        break;
+    case 'd':
+        cout << "Closest Possible Command: D, for 'DELETE'";
+        break;
+    case 'e':
+        cout << "Closest Possible Command: E, for 'ECHO'";
+        break;
+    case 'm':
+        cout << "Closest Possible Command: M, for 'MAKE'";
+        break;
+    case 'p':
+        cout << "Closest Possible Command: P, for 'CONTENTS'";
+        break;
+    case 's':
+       cout << "Closest Possible Command: S, for 'FIREFOX'";
+       break;
+    case 'x':
+       cout << "Closest Possible Command: X, for 'EXECUTE'";
+       break;
+    case 'l':
+        cout << "Closest Possible Command: L, for 'LIST'";
+        break;
+    case 'w':
+        cout << "Closest Possible Command: W, for 'CLEAR'";
+        break;
+    case 'h':
+        cout << "Closest Possible Command: H, for 'HELP'";
+        break;
+    case 'q':
+        cout << "Closest Possible Command: Q, for 'QUIT'";
+        break;
+    default:
+        cout << "There are no commands that are similar, please refer to the Guide for a list of commands and"
+             << " syntax. [Type 'H' and press 'ENTER']";
+        break;
+    }    
 }
