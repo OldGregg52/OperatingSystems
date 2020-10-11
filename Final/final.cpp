@@ -83,7 +83,7 @@ int main()
             cout << "\n\nshell: Terminating successfully\n";
             return(0);
         default:
-            if(*command.name != ' ')
+            if(*command.name != '\0')
             {
                 setStructValues(&command);
                 callFork(&command, &pid, status, foxPid, chPid);
