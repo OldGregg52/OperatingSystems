@@ -66,7 +66,6 @@ int main()
             helpPrint();
             break;
         case 'L':
-            std::cout << std::endl;
             setStructValues(&command);
             callFork(&command, &pid, status, foxPid, chPid);
             wait(&status);
@@ -80,7 +79,7 @@ int main()
             std::cout << std::endl;
             break;
         case 'Q':
-            std::cout << "\n\nshell: Terminating successfully\n";
+            std::cout << "\n\tshell: Terminating successfully\n";
             return(0);
             break;
         default:
@@ -137,7 +136,7 @@ int callFork(struct command_t* cmd, int* pid, int &status, int &foxPid, int &chP
         perror(cmd->name); return -1;
         foxPid = *pid;
     }
-    if((*pid = fork()) != 0)
+    else
     {
         wait(&status);
         if(foxPid > 0)
@@ -211,7 +210,8 @@ bool setStructValues(struct command_t* cmd)
         break;
     case 'L':
         strcpy(cmd->name, "pwd");
-        cmd->args[1] = cmd->args[2] = cmd->args[3];
+        strcpy(cmd->args[1], "-L");
+	cmd->args[2] = cmd->args[3];
         std::cout << std::endl;
         break;
     case 'M':
