@@ -25,6 +25,7 @@ struct command_t
     char *name;
     int argc;
     char *argv[MAX_ARGS];
+    char *args[3];
 };
 
 int parseCommand(char*, struct command_t*);
@@ -37,7 +38,7 @@ void setStructValues(struct command_t*, char*);
 int main()
 {
     int pid, status, foxPid;
-    char *args[3];
+    //char *args[3];
     char cmdLine[MAX_LINE_LEN];
     struct command_t command;
 
@@ -70,8 +71,8 @@ int main()
             cout << "\n\nshell: Terminating successfully\n";
             return(0);
         default:
-            setStructValues(&command, args[]);
-            callFork(&command, &pid, status, args[]);
+            setStructValues(&command);
+            callFork(&command, &pid, status);
         }
 
     }
@@ -102,11 +103,11 @@ int parseCommand(char* cLine, struct command_t* cmd)
     return 1;s
 }
 
-int callFork(struct command_t* cmd, int * pid, int &status, char * args)
+int callFork(struct command_t* cmd, int * pid, int &status)
 {
     if((*pid = fork()) == 0)
     {
-        execvp(cmd->name, args[]);
+        execvp(cmd->name, cmd->args);
         perror(cmd->name); return -1;
     }
 
@@ -165,50 +166,48 @@ void helpPrint()
           << "\tExecute:\t" << "X {program}" << endl;
 }
 
-void setStructValues(struct command_t* cmd, char* args)
+void setStructValues(struct command_t* cmd)
 {
-    args[0] = (char *) malloc(MAX_ARG_LEN);
-    args[1] = (char *) malloc(MAX_ARG_LEN);
-    args[2] = (char *) malloc(MAX_ARG_LEN);
-    args[2] = NULL;
+    cmd->args[0] = (char *) malloc(MAX_ARG_LEN);
+    cmd->args[1] = (char *) malloc(MAX_ARG_LEN);
+    cmd->args[2] = (char *) malloc(MAX_ARG_LEN);
+    cmd->args[2] = NULL;
 
     switch(*cmd->name)
     {
     case 'C':
         strcpy(cmd->name, "cp");
-        args[0] = *cmd->argv[1];
-        args[1] = *cmd->argv[2];
-        //strcpy(*args[0], cmd->argv[1]);
-        //strcpy(*args[1], cmd->argv[0]);
+        strcpy(cmd->args[0], cmd->argv[1]);
+        strcpy(cmd->args[1], cmd->argv[0]);
         break;
     case 'D':
         strcpy(cmd->name, "rm");
-        args[0] = *cmd->argv[1];
-        //strcpy(*args[0], cmd->argv[1]);
+        strcpy(cmd->args[0], cmd->argv[1]);
         args[1] = '\0';
         break;
     case 'L':
         strcpy(cmd->name, "pwd");
-        args[0] = args[1] = '\0';
+        cmd->args[0] = cmd->args[1] = '\0';
     case 'M':
         strcpy(cmd->name, "nano");
-        args[0] = args[1] = '\0';
+        cmd->args[0] = cmd->args[1] = '\0';
         break;
     case 'P':
         strcpy(cmd->name, "more");
-        args[0] = args[1] = '\0';
+        cmd->args[0] = *cmd->argv[1];
+        cmd->args[1] = '\0';
         break;
     case 'S':
         strcpy(cmd->name, "firefox");
-        args[0] = args[1] = '\0';
+        cmd->args[0] = cmd->args[1] = '\0';
         break;
     case 'W':
         strcpy(cmd->name, "clear");
-        args[0] = args[1] = '\0';
+        cmd->args[0] = cmd->args[1] = '\0';
         break;
     case 'X':
         strcpy(cmd->name, cmd->argv[1]);
-        args[0] = args[1] = '\0';
+        cmd->args[0] = cmd->args[1] = '\0';
         break;
     }
 
