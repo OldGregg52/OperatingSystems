@@ -31,13 +31,13 @@ struct command_t
 int parseCommand(char*, struct command_t*);
 void readCommand(char*);
 void printPrompt();
-int callFork(struct command_t*, int*, int&);
+int callFork(struct command_t*, int*, int&, int&, int&);
 void helpPrint();
 void setStructValues(struct command_t*);
 
 int main()
 {
-    int pid, status, foxPid;
+    int pid, status, foxPid, chPid;
     //char *args[3];
     char cmdLine[MAX_LINE_LEN];
     struct command_t command;
@@ -72,7 +72,7 @@ int main()
             return(0);
         default:
             setStructValues(&command);
-            callFork(&command, &pid, status);
+            callFork(&command, &pid, status, foxPid, chPid);
         }
 
     }
@@ -103,14 +103,27 @@ int parseCommand(char* cLine, struct command_t* cmd)
     return 1;
 }
 
-int callFork(struct command_t* cmd, int * pid, int &status)
+int callFork(struct command_t* cmd, int * pid, int &status, int &foxPid, int &chPid)
 {
     if((*pid = fork()) == 0)
     {
         execvp(cmd->name, cmd->args);
         perror(cmd->name); return -1;
+        foxPid = *pid;
     }
-
+    else
+    {
+        wait(&status);
+        if(foxPid > 0)
+        {
+            chPid = waitpid(foxPid, &status, WNOHANG);
+            if(chPid == foxPid)
+            {
+                cout << "Detecting firefox termination.\n";
+                kill(foxPid, SIGTERM); foxPid = 0;
+            }
+        }
+    }
     return 0;
 }
 
