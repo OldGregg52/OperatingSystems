@@ -99,14 +99,14 @@ int parseCommand(char* cLine, struct command_t* cmd)
     cmd->argc = argc-1;
     cmd->name = (char*) malloc(sizeof(cmd->argv[0]));
     strcpy(cmd->name, cmd->argv[0]);
-    return 1;
+    return 1;s
 }
 
 int callFork(struct command_t* cmd, int * pid, int &status, char * args)
 {
     if((*pid = fork()) == 0)
     {
-        execvp(cmd->name, args[3]);
+        execvp(cmd->name, args[]);
         perror(cmd->name); return -1;
     }
 
@@ -176,12 +176,15 @@ void setStructValues(struct command_t* cmd, char* args)
     {
     case 'C':
         strcpy(cmd->name, "cp");
-        strcpy(*args[0], cmd->argv[1]);
-        strcpy(*args[1], cmd->argv[0]);
+        args[0] = *cmd->argv[1];
+        args[1] = *cmd->argv[2];
+        //strcpy(*args[0], cmd->argv[1]);
+        //strcpy(*args[1], cmd->argv[0]);
         break;
     case 'D':
         strcpy(cmd->name, "rm");
-        strcpy(*args[0], cmd->argv[1]);
+        args[0] = *cmd->argv[1];
+        //strcpy(*args[0], cmd->argv[1]);
         args[1] = '\0';
         break;
     case 'L':
