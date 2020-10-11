@@ -120,6 +120,36 @@ int parseCommand(char* cLine, struct command_t* cmd)
 
 int callFork(struct command_t* cmd, int * pid, int &status, int &foxPid, int &chPid)
 {
+    int temp = (*pid = fork());
+    switch(temp)
+    {
+    case 0:
+        {
+            execvp(cmd->name, cmd->args);
+            perror(cmd->name); return -1;
+            foxPid = *pid;
+        }
+        break;
+    default:
+        {
+            wait(&status);
+            if(foxPid > 0)
+            {
+                chPid = waitpid(foxPid, &status, WNOHANG);
+                if(chPid == foxPid)
+                {
+                    cout << "Detecting firefox termination.\n";
+                    kill(foxPid, SIGTERM); foxPid = 0;
+                }
+            }
+        }
+        break;
+    }
+    return 0;
+}
+/*
+int callFork(struct command_t* cmd, int * pid, int &status, int &foxPid, int &chPid)
+{
     if((*pid = fork()) == 0)
     {
         execvp(cmd->name, cmd->args);
@@ -141,7 +171,7 @@ int callFork(struct command_t* cmd, int * pid, int &status, int &foxPid, int &ch
     }
     return 0;
 }
-
+*/
 /*int callFork(struct command_t* cmd, int* pid, int &status, int &foxPid)
 {
     int chPid;
