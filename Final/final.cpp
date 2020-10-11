@@ -218,27 +218,35 @@ void setStructValues(struct command_t* cmd)
         break;
     case 'L':
         strcpy(cmd->name, "pwd");
+        cmd->args[1] = cmd->args[2] = cmd->args[3];
         cout << endl;
         break;
     case 'M':
         strcpy(cmd->name, "nano");
+        cmd->args[0] = cmd->args[1] = cmd->args[2] = NULL;
         break;
     case 'P':
         strcpy(cmd->name, "more");
         strcpy(cmd->args[1], cmd->argv[1]);
+        cmd->args[2] = NULL;
         break;
     case 'S':
-        strcpy(cmd->name, "firefox");
+        strcpy(cmd->name, "firefox&");
+        cmd->args[0] = cmd->args[1] = cmd->args[2] = NULL;
         break;
     case 'W':
         strcpy(cmd->name, "clear");
+        cmd->args[0] = cmd->args[1] = cmd->args[2] = NULL;
         break;
     case 'X':
         strcpy(cmd->name, cmd->argv[1]);
+        cmd->args[0] = cmd->args[1] = cmd->args[2] = NULL;
         break;
     case 'A':
         strcpy(cmd->name, "ls");
         strcpy(cmd->args[1], "-l");
+        cmd->args[2] = NULL;
+        break;
     }
 
     return;
