@@ -239,9 +239,9 @@ bool setStructValues(struct command_t* cmd)
 void errorMessage(struct command_t* cmd)
 {
     cout << "\n\n\t!--The entered command doesn't match any preexisitng commands--!\n\n";
-    cout << "Command Entered: " << *cmd->name;
+    cout << "Command Entered: " << *cmd->name << endl << endl;
 
-    char temp = *cmd->name + 32;
+    char temp = *cmd->name;
 
     switch(temp)
     {
@@ -283,4 +283,6 @@ void errorMessage(struct command_t* cmd)
              << " syntax. [Type 'H' and press 'ENTER']";
         break;
     }
+
+    cout << endl << endl;
 }
