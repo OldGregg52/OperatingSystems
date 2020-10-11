@@ -70,8 +70,8 @@ int main()
             cout << "\n\nshell: Terminating successfully\n";
             return(0);
         default:
-            setStructValues(&command, argv);
-            callFork(&command, &pid, &status, args);
+            setStructValues(&command, &args);
+            callFork(&command, &pid, status, &args);
         }
 
     }
