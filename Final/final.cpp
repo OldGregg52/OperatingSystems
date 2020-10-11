@@ -82,11 +82,14 @@ int main()
             cout << "\n\nshell: Terminating successfully\n";
             return(0);
         default:
-            setStructValues(&command);
-            callFork(&command, &pid, status, foxPid, chPid);
+            if(*command.name != ' ')
+            {
+                setStructValues(&command);
+                callFork(&command, &pid, status, foxPid, chPid);
 
-            if(*command.name != 'f')
-                wait(&status);
+                if(*command.name != 'f')
+                    wait(&status);
+            }
         }
 
     }
@@ -247,6 +250,7 @@ void setStructValues(struct command_t* cmd)
         strcpy(cmd->args[1], "-l");
         cmd->args[2] = NULL;
         break;
+    default:
     }
 
     return;
