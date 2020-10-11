@@ -279,8 +279,9 @@ void errorMessage(struct command_t* cmd)
         cout << "Closest Possible Command: Q, for 'QUIT'";
         break;
     default:
-        cout << "There are no commands that are similar, please refer to the Guide for a list of commands and"
-             << " syntax. [Type 'H' and press 'ENTER']";
+        cout << "There are no commands that are similar, please refer to the Guide" << endl
+             << "\t\tfor a list of commands and syntax." << endl;
+             << "\t\t[Type 'H' and press 'ENTER']";
         break;
     }
 
