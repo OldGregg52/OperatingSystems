@@ -199,6 +199,7 @@ void setStructValues(struct command_t* cmd)
         break;
     case 'D':
         strcpy(cmd->name, "rm");
+        cout << *cmd->argv[0] << ' ' << *cmd->argv[1];
         strcpy(cmd->args[1], cmd->argv[1]);
         break;
     case 'L':
@@ -212,8 +213,6 @@ void setStructValues(struct command_t* cmd)
         break;
     case 'S':
         strcpy(cmd->name, "firefox");
-        strcpy(cmd->args[0], cmd->name);
-        *cmd->args[1] = '&';
         break;
     case 'W':
         strcpy(cmd->name, "clear");
