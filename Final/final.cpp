@@ -67,12 +67,26 @@ int main()
         case 'H':
             helpPrint();
             break;
+        case 'L':
+            cout << endl;
+            setStructValues(&command);
+            callFork(&command, &pid, status, foxPid, chPid);
+            wait(&status);
+            cout << endl;
+            *command.name = 'A';
+            setStructValues(&command);
+            callFork(&command, &pid, status, foxPid, chPid);
+            wait(&status);
+            break;
         case 'Q':
             cout << "\n\nshell: Terminating successfully\n";
             return(0);
         default:
             setStructValues(&command);
             callFork(&command, &pid, status, foxPid, chPid);
+
+            if(*command.name != "firefox")
+                wait(&status);
         }
 
     }
@@ -204,6 +218,8 @@ void setStructValues(struct command_t* cmd)
         break;
     case 'L':
         strcpy(cmd->name, "pwd");
+        cout << endl;
+        break;
     case 'M':
         strcpy(cmd->name, "nano");
         break;
@@ -220,6 +236,9 @@ void setStructValues(struct command_t* cmd)
     case 'X':
         strcpy(cmd->name, cmd->argv[1]);
         break;
+    case 'A':
+        strcpy(cmd->name, "ls");
+        strcpy(cmd->args[1], "-l");
     }
 
     return;
