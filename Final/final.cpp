@@ -87,7 +87,12 @@ int main()
             if(*command.name != '\0')
             {
                 if(!setStructValues(&command))
+                {
                     callFork(&command, &pid, status, foxPid, chPid);
+
+                    if(*command.name != 'f')
+                        wait(&status);
+                }
                 else
                     errorMessage(&command);
             }
@@ -280,8 +285,8 @@ void errorMessage(struct command_t* cmd)
         break;
     default:
         cout << "There are no commands that are similar, please refer to the Guide" << endl
-             << "\t\tfor a list of commands and syntax." << endl
-             << "\t\t[Type 'H' and press 'ENTER']";
+             << "\tfor a list of commands and syntax." << endl
+             << "\t[Type 'H' and press 'ENTER']";
         break;
     }
 
