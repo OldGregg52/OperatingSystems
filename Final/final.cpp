@@ -120,7 +120,11 @@ int parseCommand(char* cLine, struct command_t* cmd)
 
 int callFork(struct command_t* cmd, int * pid, int &status, int &foxPid, int &chPid)
 {
-    int temp = (*pid = fork());
+    int temp = 1;
+
+    if((*pid = fork()) == 0);
+        temp = 0;
+        
     switch(temp)
     {
     case 0:
