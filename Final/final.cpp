@@ -200,7 +200,7 @@ void setStructValues(struct command_t* cmd)
     case 'D':
         strcpy(cmd->name, "rm");
         strcpy(cmd->args[1], cmd->argv[1]);
-        *cmd->args[2] = ' ';
+        cmd->args[2] = NULL;
         break;
     case 'L':
         strcpy(cmd->name, "pwd");
