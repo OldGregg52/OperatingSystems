@@ -70,8 +70,8 @@ int main()
             cout << "\n\nshell: Terminating successfully\n";
             return(0);
         default:
-            setStructValues(&command, args[3]);
-            callFork(&command, &pid, status, args[3]);
+            setStructValues(&command, args[]);
+            callFork(&command, &pid, status, args[]);
         }
 
     }
@@ -182,30 +182,30 @@ void setStructValues(struct command_t* cmd, char* args)
     case 'D':
         strcpy(cmd->name, "rm");
         strcpy(*args[0], cmd->argv[1]);
-        *args[1] = '\0';
+        args[1] = '\0';
         break;
     case 'L':
         strcpy(cmd->name, "pwd");
-        *args[0] = *args[1] = '\0';
+        args[0] = args[1] = '\0';
     case 'M':
         strcpy(cmd->name, "nano");
-        *args[0] = *args[1] = '\0';
+        args[0] = args[1] = '\0';
         break;
     case 'P':
         strcpy(cmd->name, "more");
-        *args[0] = *args[1] = '\0';
+        args[0] = args[1] = '\0';
         break;
     case 'S':
         strcpy(cmd->name, "firefox");
-        *args[0] = *args[1] = '\0';
+        args[0] = args[1] = '\0';
         break;
     case 'W':
         strcpy(cmd->name, "clear");
-        *args[0] = *args[1] = '\0';
+        args[0] = args[1] = '\0';
         break;
     case 'X':
         strcpy(cmd->name, cmd->argv[1]);
-        *args[0] = *args[1] = '\0';
+        args[0] = args[1] = '\0';
         break;
     }
 
