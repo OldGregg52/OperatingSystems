@@ -208,7 +208,7 @@ void setStructValues(struct command_t* cmd)
         break;
     case 'P':
         strcpy(cmd->name, "more");
-        strcpy(cmd-args[1], cmd->argv[1]);
+        strcpy(cmd->args[1], cmd->argv[1]);
         break;
     case 'S':
         strcpy(cmd->name, "firefox");
