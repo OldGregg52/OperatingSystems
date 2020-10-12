@@ -136,7 +136,7 @@ int callFork(struct command_t* cmd, int* pid, int &status, int &foxPid, int &chP
         perror(cmd->name); return -1;
         foxPid = *pid;
     }
-    else
+    /*else
     {
         wait(&status);
         if(foxPid > 0)
@@ -148,7 +148,8 @@ int callFork(struct command_t* cmd, int* pid, int &status, int &foxPid, int &chP
                 kill(foxPid, SIGTERM); foxPid = 0;
             }
         }
-    }
+    }*/
+
     return 0;
 }
 
@@ -159,8 +160,8 @@ void printPrompt()
 
 void helpPrint()
 {
-     std::cout << std::endl << "To use this console, please enter the command you wish to execute with a singular" << std::endl
-          << "capital letter (otherwise the command won't be read) followed by" << std::endl
+     std::cout << std::endl << "To use this console, please enter the command you wish to execute with a" << std::endl
+          << "singular capital letter (otherwise the command won't be read) followed by" << std::endl
           << "the necessary information, such as filenames*." << std::endl
           << "A list of commands is available below:" << std::endl;
 
@@ -176,7 +177,7 @@ void helpPrint()
           << "\tWipe:\t\t" << "W" << std::endl
           << "\tExecute:\t" << "X {Program}" << std::endl;
 
-     std::cout << "\nPlease also note that to ensure the commmands that require file paths work" << std::endl
+     std::cout << "\n*Please also note that to ensure the commmands that require file paths work" << std::endl
           << "\tthe path should be the absolute path to avoid the program from" << std::endl
           << "\tselecting a file relative to its location accidentally" << std::endl << std::endl;
 
@@ -200,12 +201,15 @@ bool setStructValues(struct command_t* cmd)
     {
     case 'C':
         strcpy(cmd->name, "cp");
-        strcpy(cmd->args[1], cmd->argv[1]);
-        strcpy(cmd->args[2], cmd->argv[2]);
+        if(cmd->argv[1] != NULL)
+            strcpy(cmd->args[1], cmd->argv[1]);
+        if(cmd->argv[2] != NULL)
+            strcpy(cmd->args[2], cmd->argv[2]);
         break;
     case 'D':
         strcpy(cmd->name, "rm");
-        strcpy(cmd->args[1], cmd->argv[1]);
+        if(cmd->argv[1] != NULL)
+            strcpy(cmd->args[1], cmd->argv[1]);
         cmd->args[2] = NULL;
         break;
     case 'L':
@@ -216,12 +220,14 @@ bool setStructValues(struct command_t* cmd)
         break;
     case 'M':
         strcpy(cmd->name, "nano");
-        strcpy(cmd->args[1], cmd->argv[1]);
+        if(cmd->argv[1] != NULL)
+            strcpy(cmd->args[1], cmd->argv[1]);
         cmd->args[2] = NULL;
         break;
     case 'P':
         strcpy(cmd->name, "more");
-        strcpy(cmd->args[1], cmd->argv[1]);
+        if(cmd->argv[1] != NULL)
+            strcpy(cmd->args[1], cmd->argv[1]);
         cmd->args[2] = NULL;
         break;
     case 'S':
@@ -233,7 +239,8 @@ bool setStructValues(struct command_t* cmd)
         cmd->args[1] = cmd->args[2] = NULL;
         break;
     case 'X':
-        strcpy(cmd->name, cmd->argv[1]);
+        if(cmd->argv[1] != NULL)
+            strcpy(cmd->name, cmd->argv[1]);
         cmd->args[0] = cmd->args[1] = cmd->args[2] = NULL;
         break;
     default:
