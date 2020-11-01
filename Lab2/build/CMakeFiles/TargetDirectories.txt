@@ -1,0 +1,3 @@
+/home/dragon/Desktop/OperatingSystems/Lab2/build/CMakeFiles/rebuild_cache.dir
+/home/dragon/Desktop/OperatingSystems/Lab2/build/CMakeFiles/Main.dir
+/home/dragon/Desktop/OperatingSystems/Lab2/build/CMakeFiles/edit_cache.dir

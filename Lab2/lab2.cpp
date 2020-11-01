@@ -1,191 +1,246 @@
-#include <semaphore>
-#include <pthread>
-#include <stdlib>
+#include <semaphore.h>
+#include <pthread.h>
+#include <stdlib.h>
 #include <iostream>
-#include <unistd>
+#include <unistd.h>
+#include <chrono>
+#include <thread>
 
 using namespace std;
 
 void initSemaphores();
+void initVariables();
 
-sem_t mutex, agent, tobacco, paper, match;
-sem_t notifyM, notifyP, notifyT, smoker;
-bool isTobacco = false;
-bool isMatch = false;
-bool isPaper = false;
+sem_t mutex, agentSem, tobacco, paper, match;
+sem_t notifyM, notifyP, notifyT;
+bool isTobacco, isMatch, isPaper;
+int tSmoked, pSmoked, mSmoked, mPush, tPush, pPush;
 
-void * t_smoker(void)
+void * t_smoker(void* arg)
 {
-  for(int i = 0; i++; i < 3)
+  cout << "tin" << endl;
+  for(tSmoked = 0; tSmoked < 6; ++tSmoked)
   {
-    sem_wait(notifyT);
-    cout << "t_smoker rolling" << endl;
-    usleep(rand() % 50000);
-
-    sem_post(agent);
-    cout << "t_smoker smoking" << endl;
-    usleep(rand() % 50000);
+      if(tSmoked == 5)
+        return(NULL);
+      sem_wait(&notifyT);
+      sleep((rand() % 50) / 1000);
+      cout << "t Smoked:" << tSmoked << endl;
+      sem_post(&agentSem);
+      sleep((rand() % 50) / 1000);
   }
 
-  return;
+  cout << "tDone";
+  return(NULL);
 }
 
-void * m_smoker(void)
+void * m_smoker(void* arg)
 {
-  for(int i = 0; i++; i < 3)
+  cout << "min" << endl;
+  for(mSmoked = 0; mSmoked < 6; ++mSmoked)
   {
-    sem_wait(notifyM);
-    cout << "m_smoker rolling" << endl;
-    usleep(rand() % 50000);
-
-    sem_post(agent);
-    cout << "m_smoker smoking" << endl;
-    usleep(rand() % 50000);
+      if(mSmoked == 5)
+        return(NULL);
+      sem_wait(&notifyM);
+      sleep((rand() % 50) / 1000);
+      cout << "m Smoked: " << mSmoked << endl;
+      sem_post(&agentSem);
+      sleep((rand() % 50) / 1000);
   }
 
-  return;
+  cout << "mDone";
+  return(NULL);
 }
 
-void * p_smoker(void)
+void * p_smoker(void* arg)
 {
-  for(int i = 0; i++; i < 3)
+  cout << "pin" << endl;
+  for(pSmoked = 0; pSmoked < 6; ++pSmoked)
   {
-    sem_wait(notifyP);
-    cout << "p_smoker rolling" << endl;
-    usleep(rand() % 50000);
-
-    sem_post(agent);
-    cout << "p_smoker smoking" << endl;
-    usleep(rand() % 50000);
+      if(pSmoked == 5)
+        return(NULL);
+      sem_wait(&notifyP);
+      sleep((rand() % 50) / 1000);
+      cout << "p Smoked:" << pSmoked << endl;
+      sem_post(&agentSem);
+      sleep((rand() % 50) / 1000);
   }
 
-  return;
+  cout << "pDone";
+  return(NULL);
 }
 
-void * t_pusher(void)
+void * t_pusher(void* arg)
 {
-  for(int i = 0; i++; i < 12)
+  while(true)
   {
-    sem_wait(tobacco);
-    sem_wait(mutex);
-
+    sem_wait(&tobacco);
+    sem_wait(&mutex);
+    ++tPush;
     if(isPaper)
     {
       isPaper = false;
-      sem_post(notifyM);
+      if(mSmoked < 6)
+        sem_post(&notifyM);
+      else
+        sem_post(&agentSem);
       cout << "t_pusher notifying m_smoker" << endl;
     }
     else if(isMatch)
     {
       isMatch = false;
-      sem_post(notifyP);
+      if(pSmoked < 6)
+        sem_post(&notifyP);
+      else
+        sem_post(&agentSem);
       cout << "t_pusher notifying p_smoker" << endl;
     }
     else
       isTobacco = true;
+    sem_post(&mutex);
 
-    sem_post(mutex);
+    if(tPush == 15)
+      return(NULL);
   }
 
-  return;
+  cout << "Done";
+  sem_post(&agentSem);
+  return(arg);
 }
 
-void * m_pusher(void)
+void * m_pusher(void* arg)
 {
-  for(int i = 0; i++; i < 12)
+  while(true)
   {
-    sem_wait(match);
-    sem_wait(mutex);
-
+    sem_wait(&match);
+    sem_wait(&mutex);
+    ++mPush;
     if(isPaper)
     {
       isPaper = false;
-      sem_post(notifyT);
+      if(tSmoked < 6)
+        sem_post(&notifyT);
+      else
+        sem_post(&agentSem);
       cout << "m_pusher notifying t_smoker" << endl;
     }
     else if(isTobacco)
     {
       isTobacco = false;
-      sem_post(notifyP);
+      if(pSmoked < 6)
+        sem_post(&notifyP);
+      else
+        sem_post(&agentSem);
       cout << "m_pusher notifying p_smoker" << endl;
     }
     else
       isMatch = true;
-
-    sem_post(mutex);
+    sem_post(&mutex);
+    if(mPush == 15)
+      return(NULL);
   }
 
-  return;
+  cout << "Done";
+  sem_post(&agentSem);
+
+  return(arg);
 }
 
-void * p_pusher(void)
+void * p_pusher(void* arg)
 {
-  for(int i = 0; i++; i < 12)
+  while(true)
   {
-    sem_wait(paper);
-    sem_wait(mutex);
-
+    sem_wait(&paper);
+    sem_wait(&mutex);
+    ++pPush;
     if(isMatch)
     {
       isMatch = false;
-      sem_post(notifyT);
+      if(tSmoked < 6)
+        sem_post(&notifyT);
+      else
+        sem_post(&agentSem);
       cout << "p_pusher notifying t_smoker" << endl;
     }
     else if(isTobacco)
     {
       isTobacco = false;
-      sem_post(notifyM);
+      //sem_wait(&mHold);
+      if(mSmoked < 6)
+        sem_post(&notifyM);
+      else
+        sem_post(&agentSem);
       cout << "p_pusher notifying m_smoker" << endl;
     }
     else
       isPaper = true;
+    sem_post(&mutex);
 
-    sem_post(mutex);
+    if(pPush == 15)
+      return(NULL);
   }
 
-  return;
+  cout << "Done";
+  sem_post(&agentSem);
+  return(arg);
 }
 
-void * agent(void)
+void * agent(void* arg)
 {
   while(true)
   {
-    sem_wait(agent);
-    cout << "Agent called" << endl;
-    usleep(rand() % 200000);
-
+    sem_wait(&agentSem);
+    sleep((rand() % 200) / 1000);
     int temp = rand() % 3;
-    if(temp = 0)
+
+    if((temp == 0) && ((pPush < 12) || (tPush < 12)))
     {
-      sem_post(tobacco);
-      sem_post(paper);
-      cout << "tobacco and paper produced" << endl;
+      sem_post(&tobacco);
+      sem_post(&paper);
     }
-    else if(temp = 1)
+    else if((temp == 1) && ((pPush < 12) || (mPush < 12)))
     {
-      sem_post(paper);
-      sem_post(matches);
-      cout << "paper and matches produced" << endl;
+      sem_post(&paper);
+      sem_post(&match);
+    }
+    else if((temp == 2) && ((tPush < 12) || (mPush < 12)))
+    {
+      sem_post(&match);
+      sem_post(&tobacco);
     }
     else
+      sem_post(&agentSem);
+
+    if((mSmoked + pSmoked + tSmoked) == 15)
     {
-      sem_post(matches);
-      sem_post(tobacco);
-      cout << "matches and tobacco produced" << endl;
+      return(NULL);
+      cout << "3";
     }
-    sem_wait(agent);
   }
+
+  return(arg);
 }
 
 int main()
 {
-  srand(time());
+  srand(time(NULL));
 
-  initSempahores();
+  initVariables();
+  initSemaphores();
 
   pthread_t smokers[6];
   pthread_t pushers[3];
   pthread_t agents[3];
+
+  pthread_create(&agents[0], NULL, agent, NULL);
+  pthread_create(&agents[1], NULL, agent, NULL);
+  pthread_create(&agents[2], NULL, agent, NULL);
+
+  pthread_create(&pushers[0], NULL, t_pusher, NULL);
+  pthread_create(&pushers[1], NULL, m_pusher, NULL);
+  pthread_create(&pushers[2], NULL, p_pusher, NULL);
+
+  //cout << "pusher threads created" << endl;
 
   pthread_create(&smokers[0], NULL, t_smoker, NULL);
   pthread_create(&smokers[1], NULL, t_smoker, NULL);
@@ -194,36 +249,19 @@ int main()
   pthread_create(&smokers[4], NULL, m_smoker, NULL);
   pthread_create(&smokers[5], NULL, m_smoker, NULL);
 
-  cout << "smoker threads created" << endl;
-
-  pthread_create(&pushers[0], NULL, t_pusher, NULL);
-  pthread_create(&pushers[1], NULL, m_pusher, NULL);
-  pthread_create(&pushers[2], NULL, p_pusher, NULL);
-
-  cout << "pusher threads created" << endl;
-
-  pthread_create(&agents[0], NULL, agent, NULL);
-  pthread_create(&agents[1], NULL, agent, NULL);
-  pthread_create(&agents[2], NULL, agent, NULL);
-
-  cout << "agent threads created" << endl;
-
-  for(int i = 0; i++; i < 3)
+  for(int i = 0; i < 3; i++)
     pthread_join(pushers[i], NULL);
 
   cout << "pusher threads joined" << endl;
 
-  for(int i = 0; i++; i < 6)
+  for(int i = 0; i < 6; i++)
     pthread_join(smokers[i], NULL);
 
   cout << "smoker threads joined" << endl;
-
-  for(int i = 0; i++; i < 3)
+  for(int i = 0; i < 3; i++)
     pthread_join(agents[i], NULL);
 
   cout << "agent threads joined" << endl;
-
-  pause;
 
   return(0);
 
@@ -231,8 +269,8 @@ int main()
 
 void initSemaphores()
 {
-  sem_init(&agent, 0, 1);
-  sem_init(&mutex, 0, 0);
+  sem_init(&agentSem, 0, 1);
+  sem_init(&mutex, 0, 1);
   sem_init(&tobacco, 0, 0);
   sem_init(&paper, 0, 0);
   sem_init(&match, 0, 0);
@@ -242,4 +280,17 @@ void initSemaphores()
 
   cout << "Semaphores initialized" << endl;
   return;
+}
+
+void initVariables()
+{
+  tSmoked = 0;
+  pSmoked = 0;
+  mSmoked = 0;
+  mPush = 0;
+  tPush = 0;
+  pPush = 0;
+  isTobacco  = false;
+  isPaper = false;
+  isMatch = false;
 }
