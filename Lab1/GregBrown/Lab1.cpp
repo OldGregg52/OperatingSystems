@@ -46,6 +46,14 @@ int main()
     char cmdLine[MAX_LINE_LEN];
     struct command_t command;
 
+<<<<<<< HEAD
+=======
+    command.args[0] = (char *) malloc(MAX_ARG_LEN);    //Array of character pointers initialized to be
+    command.args[1] = (char *) malloc(MAX_ARG_LEN);    //     able to hold the MAX_ARG_LEN amount of characters
+    command.args[2] = (char *) malloc(MAX_ARG_LEN);    //     so the arguments needed for the execvp() function
+    command.args[3] = (char *) malloc(MAX_ARG_LEN);    //     can be assigned to them
+
+>>>>>>> 1f388b71f81d2ef9041ff54174db23d715f8d7c6
     while(true)     //While-loop initialized to constantly run for continuous command execution
     {
         printPrompt();      //Function prints the prompt to the screen so the user knwos to enter input
@@ -220,11 +228,14 @@ bool setStructValues(struct command_t* cmd)
 {
     bool errorBool = false;
 
+<<<<<<< HEAD
     cmd->args[0] = (char *) malloc(MAX_ARG_LEN);
     cmd->args[1] = (char *) malloc(MAX_ARG_LEN);
     cmd->args[2] = (char *) malloc(MAX_ARG_LEN);
     cmd->args[3] = (char *) malloc(MAX_ARG_LEN);
 
+=======
+>>>>>>> 1f388b71f81d2ef9041ff54174db23d715f8d7c6
     cmd->args[0] = cmd->name;
     *cmd->args[1] = *cmd->args[2] = '\0';
     cmd->args[3] = NULL;

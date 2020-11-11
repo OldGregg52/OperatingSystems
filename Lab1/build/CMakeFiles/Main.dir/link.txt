@@ -1,1 +1,0 @@
-/usr/bin/c++ -std=c++14 -rdynamic CMakeFiles/Main.dir/final.cpp.o -o Main 
