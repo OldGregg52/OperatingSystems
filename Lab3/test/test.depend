@@ -1,0 +1,8 @@
+# depslib dependency file v1.0
+1606251295 source:c:\users\gjbro\documents\git\operatingsystems\lab3\test\main.cpp
+	<stdio.h>
+	<iostream>
+	<string>
+	<stdlib.h>
+	<windows.h>
+
